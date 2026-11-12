@@ -23,6 +23,12 @@ public enum ProviderWire {
     public static func responseBody(request: TextRequest, model: String) -> [String: Any] {
         var body: [String: Any] = ["model": model, "instructions": request.instructions,
                                   "input": request.input, "store": false, "max_output_tokens": 4096]
+        // Luna defaults to medium reasoning, which delays routine dictation cleanup.
+        // Scope this to supported models so editable model names remain compatible.
+        if request.mode == .dictate,
+           model == "gpt-6-luna" || model.range(of: #"^gpt-6-luna-\d{4}-\d{2}-\d{2}$"#, options: .regularExpression) != nil {
+            body["reasoning"] = ["effort": "none"]
+        }
         if request.mode == .ask && request.webSearch {
             body["tools"] = [["type": "web_search"]]
             body["tool_choice"] = "auto"

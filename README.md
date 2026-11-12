@@ -79,6 +79,8 @@ Files live under `~/Library/Application Support/SpeakWay/History/<recording-id>/
 
 ## OpenAI setup
 
+Dictation cleanup with `gpt-6-luna`, including dated snapshots, disables extra reasoning to reduce the pause after Send. This uses the model's supported [`none` reasoning effort](https://developers.openai.com/api/docs/models/gpt-6-luna).
+
 Speech streams through the [realtime transcription API](https://developers.openai.com/api/docs/guides/realtime-transcription). Fn manually finalizes the turn. Cleanup, answers, and translation then use the [Responses API](https://developers.openai.com/api/docs/guides/text). Ask permits web search by default, with automatic tool choice and instructions to search only when the question needs current or external information. Disable it in Settings to prevent all web searches.
 
 Create a key in your [OpenAI API account](https://platform.openai.com/api-keys), then paste it into **Settings → OpenAI API key**. No developer key is embedded. API usage is billed to your OpenAI account.

@@ -62,6 +62,23 @@ import Testing
     #expect(throws: (any Error).self) { try TextRequest(mode: .dictate, transcript: "Hello", preContext: String(repeating: "x", count: 24_001)).validate() }
 }
 
+@Test func dictationSkipsReasoningOnlyForSupportedLunaModels() {
+    for (model, supportsFastDictation) in [
+        ("gpt-6-luna", true), ("gpt-6-luna-2026-07-28", true),
+        ("gpt-6-luna-custom", false), ("gpt-6-astra", false), ("gpt-4o", false)
+    ] {
+        for mode in VoiceMode.allCases {
+            let request = TextRequest(mode: mode, transcript: "Meet Tuesday, actually Wednesday.", selection: "Hello")
+            let body = ProviderWire.responseBody(request: request, model: model)
+            if mode == .dictate && supportsFastDictation {
+                #expect((body["reasoning"] as? [String: String])?["effort"] == "none")
+            } else {
+                #expect(body["reasoning"] == nil)
+            }
+        }
+    }
+}
+
 @Test func cartesiaFinalChunksKeepWhitespaceAndExcludePartialRevisions() throws {
     var transcript = CartesiaTranscript()
     try transcript.consume(["type": "transcript", "is_final": false, "text": "the wrong"])
